@@ -1,6 +1,7 @@
 package com.nataland.knucklebones.game
 
 import androidx.lifecycle.ViewModel
+import com.nataland.knucklebones.game.GameState.Companion.computeScore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,17 +22,8 @@ data class GameState(
     private val player2Score: Int
         get() = player2Board.computeScore()
 
-    val winner: WinState
-        get() = if (player1Score == player2Score) {
-            WinState.DRAW
-        } else if (player1Score > player2Score) {
-            WinState.PLAYER_1_WON
-        } else {
-            WinState.PLAYER_2_WON
-        }
-
     companion object {
-        private fun List<List<Int>>.computeScore() = sumOf {
+        fun List<List<Int>>.computeScore() = sumOf {
             it.computeColumnScore()
         }
 
@@ -87,9 +79,10 @@ class GameViewModel : ViewModel() {
     }
 
     fun endTurn() {
-        // Todo: check if game ends
         _uiState.update { state ->
-            if (state.turnState == TurnState.PLAYER_1) {
+            if (state.winState != null) {
+                state // Todo: show winner message
+            } else if (state.turnState == TurnState.PLAYER_1) {
                 val selectedColumn = state.player1Board[state.columnIndex]
                 if (selectedColumn.size == 3) {
                     state
@@ -97,25 +90,25 @@ class GameViewModel : ViewModel() {
                     val player1Board = state.player1Board.toMutableList()
                     player1Board[state.columnIndex] = selectedColumn + state.currentDiceRoll
 
-                    if (player1Board.full()) {
-                        state.copy(
-                            winState = state.winner
-                        )
-                    } else {
-                        val player2Board = state.player2Board.toMutableList()
-                        val player2Column = player2Board[state.columnIndex].toMutableList()
-                        if (player2Column.contains(state.currentDiceRoll)) {
-                            player2Column.removeAll { it == state.currentDiceRoll }
-                        }
-                        player2Board[state.columnIndex] = player2Column
-                        state.copy(
-                            turnState = TurnState.PLAYER_2,
-                            player1Board = player1Board.toList(),
-                            player2Board = player2Board.toList(),
-                            currentDiceRoll = Random.nextInt(from = 1, until = 7),
-                            columnIndex = 1
-                        )
+                    val player2Board = state.player2Board.toMutableList()
+                    val player2Index = 2 - state.columnIndex
+                    val player2Column = player2Board[player2Index].toMutableList()
+                    if (player2Column.contains(state.currentDiceRoll)) {
+                        player2Column.removeAll { it == state.currentDiceRoll }
                     }
+                    player2Board[player2Index] = player2Column
+                    state.copy(
+                        turnState = TurnState.PLAYER_2,
+                        player1Board = player1Board.toList(),
+                        player2Board = player2Board.toList(),
+                        currentDiceRoll = Random.nextInt(from = 1, until = 7),
+                        columnIndex = 1,
+                        winState = if (player1Board.full()) {
+                            determineWinner(player1Board, player2Board)
+                        } else {
+                            null
+                        }
+                    )
                 }
             } else if (state.turnState == TurnState.PLAYER_2) {
                 val selectedColumn = state.player2Board[state.columnIndex]
@@ -125,30 +118,42 @@ class GameViewModel : ViewModel() {
                     val player2Board = state.player2Board.toMutableList()
                     player2Board[state.columnIndex] = selectedColumn + state.currentDiceRoll
 
-                    if (player2Board.full()) {
-                        state.copy(
-                            winState = state.winner
-                        )
-                    } else {
-                        val player1Board = state.player1Board.toMutableList()
-                        val player1Column = player1Board[state.columnIndex].toMutableList()
-                        if (player1Column.contains(state.currentDiceRoll)) {
-                            player1Column.removeAll { it == state.currentDiceRoll }
-                        }
-                        player1Board[state.columnIndex] = player1Column
-
-                        state.copy(
-                            turnState = TurnState.PLAYER_1,
-                            player1Board = player1Board.toList(),
-                            player2Board = player2Board.toList(),
-                            currentDiceRoll = Random.nextInt(from = 1, until = 7),
-                            columnIndex = 1
-                        )
+                    val player1Board = state.player1Board.toMutableList()
+                    val player1Index = 2 - state.columnIndex
+                    val player1Column = player1Board[player1Index].toMutableList()
+                    if (player1Column.contains(state.currentDiceRoll)) {
+                        player1Column.removeAll { it == state.currentDiceRoll }
                     }
+                    player1Board[player1Index] = player1Column
+
+                    state.copy(
+                        turnState = TurnState.PLAYER_1,
+                        player1Board = player1Board.toList(),
+                        player2Board = player2Board.toList(),
+                        currentDiceRoll = Random.nextInt(from = 1, until = 7),
+                        columnIndex = 1,
+                        winState = if (player2Board.full()) {
+                            determineWinner(player1Board, player2Board)
+                        } else {
+                            null
+                        }
+                    )
                 }
             } else {
                 state
             }
+        }
+    }
+
+    private fun determineWinner(board1: List<List<Int>>, board2: List<List<Int>>): WinState {
+        val player1Score = board1.computeScore()
+        val player2Score = board2.computeScore()
+        return if (player1Score == player2Score) {
+            WinState.DRAW
+        } else if (player1Score > player2Score) {
+            WinState.PLAYER_1_WON
+        } else {
+            WinState.PLAYER_2_WON
         }
     }
 

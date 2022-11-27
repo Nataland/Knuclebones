@@ -127,6 +127,8 @@ fun Board(
             }
 
             DiceImage(value = currentDiceRoll)
+
+            // Todo: show current board score
         }
     }
 }
