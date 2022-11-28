@@ -1,4 +1,4 @@
-package com.nataland.knucklebones.game
+package com.nataland.knucklebones.rules
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,7 +9,7 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.nataland.knucklebones.ui.theme.KnucklebonesTheme
 
-class GameActivity : ComponentActivity() {
+class RulesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -18,7 +18,9 @@ class GameActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GameScreen()
+                    RulesScreen {
+                        finish()
+                    }
                 }
             }
         }

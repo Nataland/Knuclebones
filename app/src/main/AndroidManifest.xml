@@ -29,6 +29,12 @@
 
         <activity android:name=".game.GameActivity"
             android:theme="@style/Theme.Knucklebones" />
+
+        <activity android:name=".rules.RulesActivity"
+            android:theme="@style/Theme.Knucklebones" />
+
+        <activity android:name=".about.AboutActivity"
+            android:theme="@style/Theme.Knucklebones" />
     </application>
 
 </manifest>

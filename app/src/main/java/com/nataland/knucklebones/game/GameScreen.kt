@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -71,14 +72,14 @@ fun Board(
         modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.space16)))
 
         Row(
             horizontalArrangement = Arrangement.Center
         ) {
             board.forEachIndexed { i, column ->
                 if (i != 0) {
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.space16)))
                 }
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -87,12 +88,14 @@ fun Board(
                     Text(
                         text = score,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.width(72.dp).rotate(180f)
+                        modifier = Modifier
+                            .width(dimensionResource(id = R.dimen.dice_size))
+                            .rotate(180f)
                     )
                     Text(
                         text = score,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.width(72.dp)
+                        modifier = Modifier.width(dimensionResource(id = R.dimen.dice_size))
                     )
                     Column(
                         modifier = if (isActive && selectedColumn == i) {
@@ -100,7 +103,7 @@ fun Board(
                                 .clickable {
                                     onColumnSelected(i)
                                 }
-                                .border(2.dp, Color.LightGray)
+                                .border(2.dp, Color.Yellow)
                         } else if (isActive) {
                             Modifier.clickable {
                                 onColumnSelected(i)
@@ -137,7 +140,7 @@ fun Board(
 fun Dice(value: Int) {
     Box(
         modifier = Modifier
-            .size(72.dp)
+            .size(dimensionResource(id = R.dimen.dice_size))
             .background(Color.Gray)
     ) {
         DiceImage(value = value, modifier = Modifier.align(Alignment.Center))
@@ -152,7 +155,7 @@ fun DiceImage(value: Int, modifier: Modifier = Modifier) {
             painter = painterResource(id = it),
             contentDescription = "$value",
             modifier = modifier
-                .size(72.dp)
+                .size(dimensionResource(id = R.dimen.dice_size))
                 .background(Color.White)
         )
     }

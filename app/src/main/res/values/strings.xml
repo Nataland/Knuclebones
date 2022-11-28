@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Knucklebones</string>
+    <string name="back_button_cd">Back</string>
+    <string name="made_by">Made with ❤ by Nataland</string>
+    <string name="icons_by">Icons by\u0020</string>
+    <string name="icons8">Icons8</string>
+    <string name="danny_photo_cd">Photo of Danny the cat</string>
+    <string name="thanks">Thanks for playing</string>
+    <string name="rules">Rules</string>
+    <string name="about">About</string>
 </resources>

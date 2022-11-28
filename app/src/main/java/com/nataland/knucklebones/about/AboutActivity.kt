@@ -1,5 +1,7 @@
-package com.nataland.knucklebones.game
+package com.nataland.knucklebones.about
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +11,8 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.nataland.knucklebones.ui.theme.KnucklebonesTheme
 
-class GameActivity : ComponentActivity() {
+
+class AboutActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -18,7 +21,13 @@ class GameActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    GameScreen()
+                    AboutScreen(::finish) {
+                        val browserIntent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://icons8.com")
+                        )
+                        startActivity(browserIntent)
+                    }
                 }
             }
         }
